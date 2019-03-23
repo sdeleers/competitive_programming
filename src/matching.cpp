@@ -10,8 +10,8 @@ class Matching {
 
   Matching(int m, int n) : _m(m), _n(n) {
     _graph.resize(m);
-    _ma.assign(n, -1);
-    _mb.assign(m, -1);
+    _ma.assign(m, -1);
+    _mb.assign(n, -1);
     _flow = 0;
   }
 
@@ -35,7 +35,7 @@ class Matching {
 
   int solve() {
     for (int i = 0; i < _m; ++i) {
-      _visited.assign(_m, false);
+      _visited.assign(_n, false);
       if (dfs(i)) {
         ++_flow;
       }
