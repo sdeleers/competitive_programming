@@ -1,4 +1,15 @@
 template <class T>
+bool isPrime(T n) {
+  if (n < 2) return false;
+  for (T i = 2; i <= n / 2; ++i) {
+    if (n % i == 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <class T>
 vector<T> getPrimeFactors(T n) {
   vector<T> prime_factors;
   // Print the number of 2s that divide n.
