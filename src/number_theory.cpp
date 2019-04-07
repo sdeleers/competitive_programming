@@ -54,7 +54,9 @@ vector<T> getDivisors(T n) {
   return divisors;
 }
 
+// Euclid's algorithm.
 template <class T>
 T gcd(T a, T b) {
-    return b == 0 ? a : gcd(b, a % b);
+  T a_mod_b = a % b;
+  return a_mod_b == 0 ? b : gcd(b, a_mod_b);
 }
