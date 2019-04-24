@@ -60,3 +60,42 @@ T gcd(T a, T b) {
   T a_mod_b = a % b;
   return a_mod_b == 0 ? b : gcd(b, a_mod_b);
 }
+
+// a + b modulo P
+int add(int a, int b, int P) {
+  long long sum = a + b;
+  if (sum >= P) {
+    sum -= P;
+  }
+  return sum;
+}
+
+// a * b modulo P
+int multiply(int a, int b, int P) {
+  return (long long) a * b % P;
+}
+
+// Efficient calculation of a ^ b modulo P
+int power(int a, int b, int P) {
+  int result = 1;
+  while (b > 0) {
+    if (b & 1) {
+      result = multiply(result, a, P);
+    }
+    b >>= 1;
+    a = multiply(a, a, P);
+  }
+  return result;
+}
+
+// Modular inverse of a modulo P.
+// Fermat's little theorem. Only works
+// when P is a prime.
+int inverse(int a, int P) {
+  return power(a, P - 2, P);
+}
+
+// n choose k modulo P
+int nChooseK(int n, int k, int P) {
+  return multiply(fact[n], multiply(invfact[k], invfact[n - k], P), P);
+}
