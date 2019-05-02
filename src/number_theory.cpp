@@ -70,6 +70,27 @@ int add(int a, int b, int P) {
   return sum;
 }
 
+// Finds integers x, y such that Bézout identity holds:
+// x * a + y * b = gcd(a, b).
+template <class T>
+T extendedEuclid(T a, T b, T* x, T* y) {
+  // Base Case
+  if (a == 0) {
+    *x = 0;
+    *y = 1;
+    return b;
+  }
+
+  T x1, y1; // To store results of recursive call
+  T gcd = extendedEuclid(b%a, a, &x1, &y1);
+
+  // Update x and y using results of recursive call.
+  *x = y1 - (b/a) * x1;
+  *y = x1;
+
+  return gcd;
+}
+
 // a * b modulo P
 int multiply(int a, int b, int P) {
   return (long long) a * b % P;
@@ -88,11 +109,20 @@ int power(int a, int b, int P) {
   return result;
 }
 
-// Modular inverse of a modulo P.
-// Fermat's little theorem. Only works
-// when P is a prime.
-int inverse(int a, int P) {
+// Modular inverse of a modulo P using Fermat's little theorem.
+// Only works when P is a prime.
+int inverse_fermat(int a, int P) {
   return power(a, P - 2, P);
+}
+
+// Modular inverse of a modulo P using extended Euclid's algorithm.
+// Always works (if inverse exists, i.e. when a and P are coprime).
+template <class T>
+T inverse_euclid(int a, int P) {
+  T a_inverse, k;
+  // a * a_inverse + k * P = 1
+  extendedEuclid(a, P, &a_inverse, &k);
+  return a_inverse;
 }
 
 // n choose k modulo P
