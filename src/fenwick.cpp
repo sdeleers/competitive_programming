@@ -15,4 +15,8 @@ struct FenwickTree {
     }
     return sum;
   }
+  // Range query [l, r].
+  T query(int l, int r) {
+    return query(r) - query(l - 1);
+  }
 };
