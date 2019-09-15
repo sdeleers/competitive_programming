@@ -63,10 +63,10 @@ class SegmentTree {
     return rmq(0, 0, N_ - 1, l_query, r_query);
   }
 
-  void update(int index, T value) {
+  void update(int element_index, T value) {
     // Update elements_.
-    elements_[index] = value;
-    int node = leaf(index); // Start at leaf node and go up to root.
+    elements_[element_index] = value;
+    int node = leaf(element_index); // Start at leaf node and go up to root.
     while (parent(node) != -1) {
       node = parent(node);
       int i1 = tree_[left(node)];
