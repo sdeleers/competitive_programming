@@ -16,11 +16,10 @@ class SegmentTree {
     int leaf = 0; // Start at root.
     while (l != r) {
       int middle = (l + r) / 2;
-      if (element_index > middle) {
-        // Take right branch.
+      if (element_index > middle) { // Take right branch.
         l = middle + 1;
         leaf = right(leaf);
-      } else {
+      } else { // Take left branch.
         r = middle;
         leaf = left(leaf);
       }
