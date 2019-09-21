@@ -1,3 +1,5 @@
+const int INFTY = 1000000000;
+
 // Implemented as Range Minimum Query, can be adapted to other queries
 template <class T>
 class SegmentTree {
@@ -41,7 +43,7 @@ class SegmentTree {
 
   int rmq(int index, int l, int r, int l_query, int r_query) {
     // If [l, r] and [l_query, r_query] are disjoint.
-    if (l_query > r || r_query < l) return -1;
+    if (l_query > r || r_query < l) return -INFTY;
 
     // If [l, r] is a subsegment of [l_query, r_query].
     if (l_query <= l && r <= r_query) return tree_[index];
@@ -49,8 +51,8 @@ class SegmentTree {
     int i1 = rmq(left(index), l, (l + r) / 2, l_query, r_query);
     int i2 = rmq(right(index), (l + r) / 2 + 1, r, l_query, r_query);
 
-    if (i1 == -1 || i2 == -1) {
-      return (i1 == -1) ? i2 : i1;
+    if (i1 == -INFTY || i2 == -INFTY) {
+      return (i1 == -INFTY) ? i2 : i1;
     } else {
       // i1 and i2 are both valid indices.
       return elements_[i1] <= elements_[i2] ? i1 : i2;
@@ -128,7 +130,7 @@ class SegmentTree {
 
   int rangeSum(int index, int l, int r, int l_query, int r_query) {
     // If [l, r] and [l_query, r_query] are disjoint.
-    if (l_query > r || r_query < l) return -1;
+    if (l_query > r || r_query < l) return -INFTY;
 
     // If [l, r] is a subsegment of [l_query, r_query].
     if (l_query <= l && r <= r_query) return tree_[index];
@@ -136,9 +138,9 @@ class SegmentTree {
     int v1 = rangeSum(left(index), l, (l + r) / 2, l_query, r_query);
     int v2 = rangeSum(right(index), (l + r) / 2 + 1, r, l_query, r_query);
 
-    if (v1 == -1 || v2 == -1) {
+    if (v1 == -INFTY || v2 == -INFTY) {
       // Return the one that is valid.
-      return (v1 == -1) ? v2 : v1;
+      return (v1 == -INFTY) ? v2 : v1;
     } else {
       // v1 and v2 are both valid.
       return v1 + v2;
