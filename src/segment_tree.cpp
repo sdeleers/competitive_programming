@@ -1,33 +1,14 @@
-const int INFTY = 1000000000;
-
-// Implemented as Range Minimum Query, can be adapted to other queries
+// Implemented as Range Minimum Query, can be adapted to other queries.
 template <class T>
 class SegmentTree {
  private:
   vector<int> tree_; // In "heap format".
   vector<T> elements_;
   int N_; // Size of elements_.
+  T INFTY = numeric_limits<T>::max();
 
   int left(int index) { return 2 * index + 1; }
   int right(int index) { return 2 * index + 2; }
-  int parent(int index) { return index != 0 ? (index - 1) / 2 : -1; }
-  int leaf(int element_index) {
-    // Find leaf node which stores segment [element_index, element_index].
-    int l = 0;
-    int r = N_ - 1;
-    int leaf = 0; // Start at root.
-    while (l != r) {
-      int middle = (l + r) / 2;
-      if (element_index > middle) { // Take right branch.
-        l = middle + 1;
-        leaf = right(leaf);
-      } else { // Take left branch.
-        r = middle;
-        leaf = left(leaf);
-      }
-    }
-    return leaf;
-  }
 
   void build(int index, int l, int r) {
     if (l == r) {
@@ -37,7 +18,7 @@ class SegmentTree {
       build(right(index), (l + r) / 2 + 1, r);
       int i1 = tree_[left(index)];
       int i2 = tree_[right(index)];
-      tree_[index] = elements_[i1] <= elements_[i2] ? i1 : i2;
+      tree_[index] = (elements_[i1] <= elements_[i2]) ? i1 : i2;
     }
   }
 
@@ -52,10 +33,30 @@ class SegmentTree {
     int i2 = rmq(right(index), (l + r) / 2 + 1, r, l_query, r_query);
 
     if (i1 == -INFTY || i2 == -INFTY) {
-      return (i1 == -INFTY) ? i2 : i1;
+      // Return the one that is valid.
+      return max(i1, i2);
     } else {
       // i1 and i2 are both valid indices.
       return elements_[i1] <= elements_[i2] ? i1 : i2;
+    }
+  }
+
+  void update(int node_index, int l, int r, int element_index, T value) {
+    if (l == r) {
+      // Leaf index.
+      tree_[node_index] = element_index;
+    } else {
+      int mid = (l + r) / 2;
+      if (element_index <= mid) {
+        // Recurse on left child.
+        update(left(node_index), l, mid, element_index, value);
+      } else {
+        // Recurse on right child.
+        update(right(node_index), mid + 1, r, element_index, value);
+      }
+      int i1 = tree_[left(node_index)];
+      int i2 = tree_[right(node_index)];
+      tree_[node_index] = (elements_[i1] <= elements_[i2]) ? i1 : i2;
     }
   }
 
@@ -65,16 +66,8 @@ class SegmentTree {
   }
 
   void update(int element_index, T value) {
-    // Update elements_.
     elements_[element_index] = value;
-    int node = leaf(element_index); // Start at leaf node and go up to root.
-    tree_[node] = elements_[element_index];
-    while (parent(node) != -1) {
-      node = parent(node);
-      int i1 = tree_[left(node)];
-      int i2 = tree_[right(node)];
-      tree_[node] = elements_[i1] <= elements_[i2] ? i1 : i2; 
-    }
+    update(0, 0, N_ - 1, element_index, value);
   }
 
   SegmentTree(vector<T> elements) {
@@ -89,34 +82,17 @@ class SegmentTree {
 // the values in its range.
 // This has the same complexity as the FenwickTree but
 // might be a bit slower due to larger constant factor.
+// Every node stores the sum of the values in its range.
 template <class T>
 class SegmentTree {
  private:
   vector<int> tree_; // In "heap format".
   vector<T> elements_;
   int N_; // Size of elements_.
+  T INFTY = numeric_limits<T>::max();
 
   int left(int index) { return 2 * index + 1; }
   int right(int index) { return 2 * index + 2; }
-  int parent(int index) { return index != 0 ? (index - 1) / 2 : -1; }
-  int leaf(int element_index) {
-    // Find leaf node which stores segment [element_index, element_index].
-    int l = 0;
-    int r = N_ - 1;
-    int leaf = 0; // Start at root.
-    while (l != r) {
-      int middle = (l + r) / 2;
-      if (element_index > middle) {
-        // Take right branch.
-        l = middle + 1;
-        leaf = right(leaf);
-      } else {
-        r = middle;
-        leaf = left(leaf);
-      }
-    }
-    return leaf;
-  }
 
   void build(int index, int l, int r) {
     if (l == r) {
@@ -140,10 +116,27 @@ class SegmentTree {
 
     if (v1 == -INFTY || v2 == -INFTY) {
       // Return the one that is valid.
-      return (v1 == -INFTY) ? v2 : v1;
+      return max(v1, v2);
     } else {
       // v1 and v2 are both valid.
       return v1 + v2;
+    }
+  }
+
+  void add(int node_index, int l, int r, int element_index, T increment) {
+    if (l == r) {
+      // Leaf node.
+      tree_[node_index] += increment;
+    } else {
+      int mid = (l + r) / 2;
+      if (element_index <= mid) {
+        // Recurse on left child.
+        add(left(node_index), l, mid, element_index, increment);
+      } else {
+        // Recurse on right child.
+        add(right(node_index), mid + 1, r, element_index, increment);
+      }
+      tree_[node_index] = tree_[left(node_index)] + tree_[right(node_index)];
     }
   }
 
@@ -153,14 +146,8 @@ class SegmentTree {
   }
 
   void add(int element_index, T increment) {
-    // Update elements_.
     elements_[element_index] += increment;
-    int node = leaf(element_index); // Start at leaf node and go up to root.
-    tree_[node] = elements_[element_index];
-    while (parent(node) != -1) {
-      node = parent(node);
-      tree_[node] = tree_[left(node)] + tree_[right(node)];
-    }
+    add(0, 0, N_ - 1, element_index, increment);
   }
 
   SegmentTree(vector<T> elements) {
