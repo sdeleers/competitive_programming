@@ -1,11 +1,10 @@
 // Implemented as Range Minimum Query, can be adapted to other queries.
-template <class T>
 class SegmentTree {
  private:
-  vector<int> tree_; // In "heap format".
-  vector<T> elements_;
+  vector<long long> tree_; // In "heap format".
+  vector<long long> elements_;
   int N_; // Size of elements_.
-  T INFTY = numeric_limits<T>::max();
+  long long INFTY = numeric_limits<long long>::max();
 
   int left(int index) { return 2 * index + 1; }
   int right(int index) { return 2 * index + 2; }
@@ -41,7 +40,7 @@ class SegmentTree {
     }
   }
 
-  void update(int node_index, int l, int r, int element_index, T value) {
+  void update(int node_index, int l, int r, int element_index, long long value) {
     if (l == r) {
       // Leaf index.
       tree_[node_index] = element_index;
@@ -65,12 +64,12 @@ class SegmentTree {
     return rmq(0, 0, N_ - 1, l_query, r_query);
   }
 
-  void update(int element_index, T value) {
+  void update(int element_index, long long value) {
     elements_[element_index] = value;
     update(0, 0, N_ - 1, element_index, value);
   }
 
-  SegmentTree(vector<T> elements) {
+  SegmentTree(vector<long long> elements) {
     elements_ = elements;
     N_ = elements_.size();
     tree_.assign(4 * N_, 0);
@@ -83,13 +82,12 @@ class SegmentTree {
 // This has the same complexity as the FenwickTree but
 // might be a bit slower due to larger constant factor.
 // Every node stores the sum of the values in its range.
-template <class T>
 class SegmentTree {
  private:
-  vector<int> tree_; // In "heap format".
-  vector<T> elements_;
+  vector<long long> tree_; // In "heap format".
+  vector<long long> elements_;
   int N_; // Size of elements_.
-  T INFTY = numeric_limits<T>::max();
+  long long INFTY = numeric_limits<long long>::max();
 
   int left(int index) { return 2 * index + 1; }
   int right(int index) { return 2 * index + 2; }
@@ -104,15 +102,15 @@ class SegmentTree {
     }
   }
 
-  int rangeSum(int index, int l, int r, int l_query, int r_query) {
+  long long rangeSum(int index, int l, int r, int l_query, int r_query) {
     // If [l, r] and [l_query, r_query] are disjoint.
     if (l_query > r || r_query < l) return -INFTY;
 
     // If [l, r] is a subsegment of [l_query, r_query].
     if (l_query <= l && r <= r_query) return tree_[index];
 
-    int v1 = rangeSum(left(index), l, (l + r) / 2, l_query, r_query);
-    int v2 = rangeSum(right(index), (l + r) / 2 + 1, r, l_query, r_query);
+    long long v1 = rangeSum(left(index), l, (l + r) / 2, l_query, r_query);
+    long long v2 = rangeSum(right(index), (l + r) / 2 + 1, r, l_query, r_query);
 
     if (v1 == -INFTY || v2 == -INFTY) {
       // Return the one that is valid.
@@ -123,7 +121,7 @@ class SegmentTree {
     }
   }
 
-  void add(int node_index, int l, int r, int element_index, T increment) {
+  void add(int node_index, int l, int r, int element_index, long long increment) {
     if (l == r) {
       // Leaf node.
       tree_[node_index] += increment;
@@ -141,16 +139,16 @@ class SegmentTree {
   }
 
  public:
-  int rangeSum(int l_query, int r_query) {
+  long long rangeSum(int l_query, int r_query) {
     return rangeSum(0, 0, N_ - 1, l_query, r_query);
   }
 
-  void add(int element_index, T increment) {
+  void add(int element_index, long long increment) {
     elements_[element_index] += increment;
     add(0, 0, N_ - 1, element_index, increment);
   }
 
-  SegmentTree(vector<T> elements) {
+  SegmentTree(const vector<long long>& elements) {
     elements_ = elements;
     N_ = elements_.size();
     tree_.assign(4 * N_, 0);
