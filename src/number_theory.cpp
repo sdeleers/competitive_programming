@@ -125,6 +125,23 @@ T inverseEuclid(T a, T P) {
   return a_inverse;
 }
 
+void computeFactorials() {
+  long long factorial[N];
+  long long inv_factorial[N];
+  factorial[0] = 1;
+  factorial[1] = 1;
+  for (int i = 2; i < N; ++i) {
+    factorial[i] = i * factorial[i - 1];
+    if (factorial[i] >= P) factorial[i] %= P;
+  }
+
+  inv_factorial[0] = 1;
+  for (int i = 1; i < N; ++i) {
+    inv_factorial[i] = inverseEuclid<long long>(factorial[i], P);
+    while (inv_factorial[i] < 0) inv_factorial[i] += P;
+    if (inv_factorial[i] >= P) inv_factorial[i] %= P;
+}
+
 // n choose k modulo P
 int nChooseK(int n, int k, int P) {
   return multiply(fact[n], multiply(invfact[k], invfact[n - k], P), P);
