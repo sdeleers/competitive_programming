@@ -118,7 +118,7 @@ int inverse_fermat(int a, int P) {
 // Modular inverse of a modulo P using extended Euclid's algorithm.
 // Always works (if inverse exists, i.e. when a and P are coprime).
 template <class T>
-T inverse_euclid(int a, int P) {
+T inverseEuclid(T a, T P) {
   T a_inverse, k;
   // a * a_inverse + k * P = 1
   extendedEuclid(a, P, &a_inverse, &k);
