@@ -23,6 +23,9 @@ class Matching {
     for (int right : _graph[left]) {
       if (!_visited[right]) {
         _visited[right] = true;
+        // Try to free up right by matching whatever it's
+        // matched to on the left side (either nothing (-1) or _mb[right])
+        // to something new.
         if (_mb[right] == -1 || dfs(_mb[right])) {
           _ma[left] = right;
           _mb[right] = left;
