@@ -3,6 +3,64 @@ struct Point {
   double y;
 };
 
+// Represents the (normalized) direction of a line
+// There is no "opposite direction", i.e. the == operator will
+// return true for (-1, -1) == (1, 1).
+struct Direction {
+  long long x;
+  long long y;
+
+  Direction(long long x_dir, long long y_dir) {
+    long long g = __gcd(abs(x_dir), abs(y_dir));
+    if (g > 0) {
+      x_dir /= g;
+      y_dir /= g;
+    }
+
+    if (x_dir == 0) {
+      y_dir = abs(y_dir);
+    } else if (y_dir == 0) {
+      x_dir = abs(x_dir);
+    } else if (x_dir < 0) {
+      x_dir *= -1;
+      y_dir *= -1;
+    }
+    
+    x = x_dir;
+    y = y_dir;
+  }
+
+  bool operator<(const Direction& dir) const {
+    if (x != dir.x) return x < dir.x;
+    if (y != dir.y) return y < dir.y;
+    return false;
+  }
+
+  bool operator==(const Direction& dir) const {
+    return x == dir.x && y == dir.y;
+  }
+};
+
+// Collinear lines represent the same line.
+// == operator returns true if lines are collinear.
+struct Line {
+  Direction direction;
+  Point p; // any point on the line.
+
+  Line(const Point& p1, const Point& p2) : direction(p1.x - p2.x, p1.y - p2.y), p(p1) {
+  }
+
+  bool goesThrough(const Point& point) const {
+    Direction d(point.x - p.x, point.y - p.y);
+    if (d.x == 0 && d.y == 0) return true;
+    return direction == d;
+  }
+
+  bool operator==(const Line& line) const {
+    return direction == line.direction && goesThrough(line.p);
+  }
+};
+
 struct Circle {
   Point p;
   double r;
