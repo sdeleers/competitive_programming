@@ -1,10 +1,11 @@
 // Implemented as Range Minimum Query, can be adapted to other queries.
 class SegmentTree {
  private:
-  vector<long long> tree_; // In "heap format".
   vector<long long> elements_;
+  vector<long long> tree_; // In "heap format".
   int N_; // Size of elements_.
-  long long INFTY = numeric_limits<long long>::max();
+
+  long long INFTY = 1000000000000000;  // 1e15.
 
   int left(int index) { return 2 * index + 1; }
   int right(int index) { return 2 * index + 2; }
@@ -23,7 +24,7 @@ class SegmentTree {
 
   int rmq(int index, int l, int r, int l_query, int r_query) {
     // If [l, r] and [l_query, r_query] are disjoint.
-    if (l_query > r || r_query < l) return -INFTY;
+    if (l_query > r || r_query < l) return -1;
 
     // If [l, r] is a subsegment of [l_query, r_query].
     if (l_query <= l && r <= r_query) return tree_[index];
@@ -31,7 +32,7 @@ class SegmentTree {
     int i1 = rmq(left(index), l, (l + r) / 2, l_query, r_query);
     int i2 = rmq(right(index), (l + r) / 2 + 1, r, l_query, r_query);
 
-    if (i1 == -INFTY || i2 == -INFTY) {
+    if (i1 == -1 || i2 == -1) {
       // Return the one that is valid.
       return max(i1, i2);
     } else {
@@ -60,8 +61,20 @@ class SegmentTree {
   }
 
  public:
-  int rmq(int l_query, int r_query) {
+  int rmq_index(int l_query, int r_query) {
+    if (l_query > r_query) {
+      return -1;
+    }
     return rmq(0, 0, N_ - 1, l_query, r_query);
+  }
+
+  long long rmq(int l_query, int r_query) {
+    int rmq_idx = rmq_index(l_query, r_query);
+    if (rmq_idx == -1) {
+      return INFTY;
+    } else {
+      return elements_[rmq_idx];
+    }
   }
 
   void update(int element_index, long long value) {
@@ -69,9 +82,9 @@ class SegmentTree {
     update(0, 0, N_ - 1, element_index, value);
   }
 
-  SegmentTree(vector<long long> elements) {
-    elements_ = elements;
-    N_ = elements_.size();
+  SegmentTree(int number_of_elements) {
+    N_ = number_of_elements;
+    elements_.resize(N_, INFTY);
     tree_.assign(4 * N_, 0);
     build(0, 0, N_ - 1);
   }
