@@ -2,6 +2,7 @@
 // for every vertex, i.e.
 // for (int i = 0; i < N; ++i) dfsFindCycles(i, ...);
 // Find cycles in undirected graph
+// If graph is directed, then remove the line with the NOTE below.
 void dfsFindCycles(int u, const vector<vector<int>>& g,
                    vector<string>& color,
                    vector<int>& parent,
@@ -11,7 +12,7 @@ void dfsFindCycles(int u, const vector<vector<int>>& g,
   } else if (color[u] == "WHITE") {
     color[u] = "GREY";
     for (int neighbor : g[u]) {
-      if (parent[u] == neighbor) continue;
+      if (parent[u] == neighbor) continue;  // NOTE: If the graph is directed, then remove this line.
       parent[neighbor] = u;
       dfsFindCycles(neighbor, g, color, parent, cycles);
     }
