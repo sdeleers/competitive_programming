@@ -1,3 +1,6 @@
+// If graph is not connected, call this function
+// for every vertex, i.e.
+// for (int i = 0; i < N; ++i) dfsFindCycles(i, ...);
 void dfsFindCycles(int u, const vector<vector<int>>& g,
                    vector<string>& color,
                    vector<int>& parent,
