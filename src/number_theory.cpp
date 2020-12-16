@@ -62,7 +62,8 @@ T gcd(T a, T b) {
 }
 
 // a + b modulo P
-int add(int a, int b, int P) {
+template <class T>
+T add(T a, T b, T P) {
   long long sum = a + b;
   if (sum >= P) {
     sum -= P;
@@ -92,12 +93,14 @@ T extendedEuclid(T a, T b, T* x, T* y) {
 }
 
 // a * b modulo P
-int multiply(int a, int b, int P) {
+template <class T>
+T multiply(T a, T b, T P) {
   return (long long) a * b % P;
 }
 
 // Efficient calculation of a ^ b modulo P
-int power(int a, int b, int P) {
+template <class T>
+T power(T a, T b, T P) {
   int result = 1;
   while (b > 0) {
     if (b & 1) {
@@ -111,7 +114,7 @@ int power(int a, int b, int P) {
 
 // Modular inverse of a modulo P using Fermat's little theorem.
 // Only works when P is a prime.
-int inverse_fermat(int a, int P) {
+int inverseFermat(int a, int P) {
   return power(a, P - 2, P);
 }
 
@@ -125,24 +128,29 @@ T inverseEuclid(T a, T P) {
   return a_inverse;
 }
 
+const int MAX_VAL = 100000;
+T fact[MAX_VAL];
+T invfact[MAX_VAL];
+
+template <class T>
 void computeFactorials() {
-  long long factorial[N];
-  long long inv_factorial[N];
-  factorial[0] = 1;
-  factorial[1] = 1;
-  for (int i = 2; i < N; ++i) {
-    factorial[i] = i * factorial[i - 1];
-    if (factorial[i] >= P) factorial[i] %= P;
+  fact[0] = 1;
+  fact[1] = 1;
+  for (int i = 2; i < MAX_VAL; ++i) {
+    fact[i] = i * fact[i - 1];
+    if (fact[i] >= P) fact[i] %= P;
   }
 
-  inv_factorial[0] = 1;
-  for (int i = 1; i < N; ++i) {
-    inv_factorial[i] = inverseEuclid<long long>(factorial[i], P);
-    while (inv_factorial[i] < 0) inv_factorial[i] += P;
-    if (inv_factorial[i] >= P) inv_factorial[i] %= P;
+  invfact[0] = 1;
+  for (int i = 1; i < MAX_VAL; ++i) {
+    invfact[i] = inverseEuclid<T>(fact[i], P);
+    while (invfact[i] < 0) invfact[i] += P;
+    if (invfact[i] >= P) invfact[i] %= P;
+  }
 }
 
 // n choose k modulo P
-int nChooseK(int n, int k, int P) {
+template <class T>
+T choose(T n, T k, T P) {
   return multiply(fact[n], multiply(invfact[k], invfact[n - k], P), P);
 }
