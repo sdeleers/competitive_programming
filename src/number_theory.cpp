@@ -152,5 +152,9 @@ void computeFactorials() {
 // n choose k modulo P
 template <class T>
 T choose(T n, T k, T P) {
-  return multiply(fact[n], multiply(invfact[k], invfact[n - k], P), P);
+  if (k > n) {
+    return 0;
+  } else {
+    return multiply(fact[n], multiply(invfact[k], invfact[n - k], P), P);
+  }
 }
