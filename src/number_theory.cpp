@@ -101,7 +101,7 @@ T multiply(T a, T b, T P) {
 // Efficient calculation of a ^ b modulo P
 template <class T>
 T power(T a, T b, T P) {
-  int result = 1;
+  T result = 1;
   while (b > 0) {
     if (b & 1) {
       result = multiply(result, a, P);
@@ -129,8 +129,8 @@ T inverseEuclid(T a, T P) {
 }
 
 const int MAX_VAL = 100000;
-T fact[MAX_VAL];
-T invfact[MAX_VAL];
+int64_t fact[MAX_VAL];
+int64_t invfact[MAX_VAL];
 
 template <class T>
 void computeFactorials() {
