@@ -1,6 +1,3 @@
-
-
-
 struct DisjointSet {
   vector<int> parent;
 
