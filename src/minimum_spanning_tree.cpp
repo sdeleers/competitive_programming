@@ -31,14 +31,14 @@ class MinimumSpanningTree {
     // Distance contains the distance of every vertex to S (distance is 0 if in S).
     vector<T> dist(N_, numeric_limits<T>::max());
     while (!q.empty()) {
-      P p = q.top();
+      const auto p = q.top();
       q.pop();
       if (p.first < dist[p.second]) {
         dist[p.second] = 0;
         weight_ += p.first;
         for (int i = 0; i < g_[p.second].size(); ++i) {
-          T d = g_[p.second][i].dist;
-          int to = g_[p.second][i].to;
+          const T d = g_[p.second][i].dist;
+          const int to = g_[p.second][i].to;
           if (d < dist[to]) {
             q.push({ d, to });
           }
