@@ -8,11 +8,15 @@ struct DisjointSet {
     const int root2 = find(b);
     if (root1 != root2) {
       // Attach smaller tree to larger tree.
-      if (size(a) < size(b)) {
+      if (root1 > root2) {  // Note: root1 and root2 are negative
+        // Component rooted at root1 is smaller.
+
         // Order matters.
         parent[root2] += parent[root1];  // Increase size of root2
         parent[root1] = root2;  // Attach root1 to root2
       } else {
+        // Component rooted at root2 is smaller.
+
         parent[root1] += parent[root2];  // Increase size of root1
         parent[root2] = root1;  // Attach root2 to root1
       }
