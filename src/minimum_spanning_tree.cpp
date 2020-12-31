@@ -4,13 +4,13 @@ struct Edge {
   long long dist;
 };
 
+// Prim's algorithm
 template <typename T>
 class MinimumSpanningTree {
  private:
   T weight_;
   int N_;
   vector<vector<Edge>> g_; // Adjacency list.
-  typedef pair<T, int> P;
 
  public:
   MinimumSpanningTree(const vector<vector<Edge>> g) :
@@ -26,8 +26,8 @@ class MinimumSpanningTree {
     // The priority queue contains vertices in V - S, and for each of
     // these vertices it has weight equal to the minimum distance of
     // that vertex to (a node in) S.
-    priority_queue<P, vector<P>, greater<P>> q;
-    q.push({ 0, 0 });
+    priority_queue<pair<T, int>, vector<pair<T, int>>, greater<pair<T, int>>> q;
+    q.push({ 0, 0 });  // { weight, index }
     // Distance contains the distance of every vertex to S (distance is 0 if in S).
     vector<T> dist(N_, numeric_limits<T>::max());
     while (!q.empty()) {
