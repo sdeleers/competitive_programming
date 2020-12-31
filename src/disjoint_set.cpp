@@ -1,8 +1,8 @@
-struct UnionFind {
+struct DisjointSet {
   // Root elements have a negative number which is the negative of the
   // size of their connected component.
   vector<int> parent;
-  UnionFind (int n) : parent(n, -1) {}
+  DisjointSet (int n) : parent(n, -1) {}
 
   int findComponent(int x) { 
     return parent[x] < 0 ? x : parent[x] = findComponent(parent[x]);
