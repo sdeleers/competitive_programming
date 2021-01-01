@@ -285,3 +285,129 @@ struct SegTree {
     }
   }
 };
+
+// Supports both setTo and rangeAdd
+template <class T>
+struct SegTree {
+  int leftmost;
+  int rightmost;
+  SegTree* left_child;
+  SegTree* right_child;
+  T sum;
+
+  // Propagation value that hasn't been propagated to its children.
+  // If prop is non-zero this means that "sum" variable of this node
+  // contains a different value than the sum of the left_child and
+  // right_child sum. It means that the subtree is out of sync with
+  // its root (root = this node).
+  
+  // { is_set_to, value }
+  // where value is "setTo" value when is_set_to = true
+  // and value is "rangeAdd" value when is_set_to = false
+  pair<bool, T> prop;
+
+  SegTree(int leftmost, int rightmost, const vector<T>& elements) {
+    this->leftmost = leftmost;
+    this->rightmost = rightmost;
+    prop = { false, 0 };
+    if (leftmost == rightmost) {
+      sum = elements[leftmost];
+    } else {
+      const int mid = (leftmost + rightmost) / 2;
+      left_child = new SegTree(leftmost, mid, elements);
+      right_child = new SegTree(mid + 1, rightmost, elements);
+      sum = left_child->sum + right_child->sum;
+    }
+  }
+
+  // Propagate to the subtree.
+  void propagate() {
+    // assert(left_child != nullptr && right_child != nullptr);
+    const int len_left_child = (left_child->rightmost - left_child->leftmost + 1);
+    const int len_right_child = (right_child->rightmost - right_child->leftmost + 1);
+
+    if (prop.first) {
+      // setTo
+      left_child->sum = prop.second * len_left_child;
+      left_child->prop = prop;
+
+      right_child->sum = prop.second * len_right_child;
+      right_child->prop = prop;      
+    } else {
+      // rangeAdd
+      left_child->sum += prop.second * len_left_child;
+      left_child->prop.second += prop.second;
+
+      right_child->sum += prop.second * len_right_child;
+      right_child->prop.second += prop.second;      
+    }
+    // Reset prop because we're done propagating.
+    prop = { false, 0 };
+  }
+
+  T query(int left, int right) {
+    if (left > rightmost || right < leftmost) {
+      // Disjoint.
+      return 0;
+    } else if (leftmost >= left && rightmost <= right) {
+      // Fully contained within.
+
+      // We don't need to propagate since we are not going down to
+      // the children of this node.
+
+      return sum;
+    } else {
+      // Partially overlapping.
+      propagate();
+      return left_child->query(left, right) + right_child->query(left, right);
+    }
+  }
+
+  void rangeAdd(int left, int right, T value) {
+    if (left > rightmost || right < leftmost) {
+      // Disjoint: don't do anything.
+    } else if (leftmost >= left && rightmost <= right) {
+      // Fully contained within.
+
+      // Propagation is necessary to make subtree nodes consistent but
+      // we're not going down to the subtree so no need to propagate.
+
+      const int len = (rightmost - leftmost + 1);
+      sum += value * len;
+      // Set propagation value which signifies that subtree is out of sync.
+
+      // Range add stays range add but with higher value
+      // setTo stays setTo but with higher value.
+      prop.second += value;
+    } else {
+      // Partially overlapping.
+      // assert(left_child != nullptr && right_child != nullptr);
+      propagate();
+      left_child->rangeAdd(left, right, value);
+      right_child->rangeAdd(left, right, value);
+      sum = left_child->sum + right_child->sum;
+    }
+  }
+
+  void setTo(int left, int right, T value) {
+    if (left > rightmost || right < leftmost) {
+      // Disjoint: don't do anything.
+    } else if (leftmost >= left && rightmost <= right) {
+      // Fully contained within.
+
+      // No need to propagate.
+      const int len = (rightmost - leftmost + 1);
+      sum = value * len;
+      // Lazy prop becomes a "setTo". Whatever was there before gets
+      // overridden.
+      prop = { true, value };
+    } else {
+      // Partially overlapping.
+      // assert(left_child != nullptr && right_child != nullptr);
+      propagate();
+      left_child->setTo(left, right, value);
+      right_child->setTo(left, right, value);
+      sum = left_child->sum + right_child->sum;
+    }
+  }
+};
