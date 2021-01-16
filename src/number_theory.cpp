@@ -41,7 +41,7 @@ template <class T>
 vector<T> getDivisors(T n) {
   vector<T> divisors;
 
-  for (int i = 1; i <= sqrt(n); ++i) {
+  for (T i = 1; i <= sqrt(n); ++i) {
     if (n % i == 0) {
       if (n/i == i) {
         divisors.push_back(i);
@@ -64,7 +64,7 @@ T gcd(T a, T b) {
 // a + b modulo P
 template <class T>
 T add(T a, T b, T P) {
-  long long sum = a + b;
+  T sum = a + b;
   if (sum >= P) {
     sum -= P;
   }
@@ -95,7 +95,7 @@ T extendedEuclid(T a, T b, T* x, T* y) {
 // a * b modulo P
 template <class T>
 T multiply(T a, T b, T P) {
-  return (long long) a * b % P;
+  return (T) a * b % P;
 }
 
 // Efficient calculation of a ^ b modulo P
@@ -114,7 +114,8 @@ T power(T a, T b, T P) {
 
 // Modular inverse of a modulo P using Fermat's little theorem.
 // Only works when P is a prime.
-int inverseFermat(int a, int P) {
+template <class T>
+T inverseFermat(T a, T P) {
   return power(a, P - 2, P);
 }
 
