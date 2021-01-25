@@ -159,3 +159,17 @@ T choose(T n, T k, T P) {
     return multiply(fact[n], multiply(invfact[k], invfact[n - k], P), P);
   }
 }
+
+void modularize(int64_t& number, int64_t P) {
+  if (number >= P) {
+    number %= P;
+  } else if (number < 0) {
+    if (number >= -P) {
+      number += P;
+    } else {
+      int64_t positive = -number;
+      modularize(positive, P);
+      number = -positive + P;
+    }
+  }
+}
