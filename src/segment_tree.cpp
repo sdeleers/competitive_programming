@@ -1,3 +1,63 @@
+// Sum
+template <class T>
+struct SegTree {
+  const T BAD_VALUE = -1;
+  int leftmost;
+  int rightmost;
+  SegTree* left_child = nullptr;
+  SegTree* right_child = nullptr;
+  T sum;
+
+  SegTree(int leftmost, int rightmost, const vector<T>& elements) {
+    this->leftmost = leftmost;
+    this->rightmost = rightmost;
+    if (leftmost == rightmost) {
+      sum = elements[leftmost];
+    } else {
+      const int mid = (leftmost + rightmost) / 2;
+      left_child = new SegTree(leftmost, mid, elements);
+      right_child = new SegTree(mid + 1, rightmost, elements);
+      sum = left_child->sum + right_child->sum;
+    }
+  }
+
+  T rangeSum(int left, int right) {
+    if (left > rightmost || right < leftmost) {
+      // Disjoint.
+      return BAD_VALUE;
+    } else if (leftmost >= left && rightmost <= right) {
+      // Completely contained within.
+      return sum;
+    } else {
+      int left_child_value = (left_child != nullptr) ? left_child->rangeSum(left, right) : BAD_VALUE;
+      int right_child_value = (right_child != nullptr) ? right_child->rangeSum(left, right) : BAD_VALUE;
+      if (left_child_value != BAD_VALUE && right_child_value != BAD_VALUE) {
+        return left_child_value + right_child_value;
+      } else if (left_child_value != BAD_VALUE) {
+        return left_child_value;
+      } else {
+        return right_child_value;
+      }
+    }
+  }
+
+  void pointUpdate(int index, T value) {
+    if (leftmost == rightmost) {
+      assert(leftmost == index);
+      sum += value;
+    } else {
+      assert(left_child != nullptr);
+      assert(right_child != nullptr);
+      if (index <= left_child->rightmost) {
+        left_child->pointUpdate(index, value);
+      } else {
+        right_child->pointUpdate(index, value);
+      }
+      sum = left_child->sum + right_child->sum;
+    }
+  }
+};
+
 // XOR
 template <class T>
 struct SegTree {
