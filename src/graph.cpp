@@ -30,3 +30,55 @@ void dfsFindCycles(int u, const vector<vector<int>>& g,
     assert(false);
   }
 }
+
+// ------------------------------
+bool hasCycleDFS(int u, const vector<vector<int>>& g,
+                 vector<string>& color) {
+  if (color[u] == "BLACK") {
+    return false;
+  } else if (color[u] == "WHITE") {
+    color[u] = "GREY";
+    for (int neighbor : g[u]) {
+      if (hasCycleDFS(neighbor, g, color)) return true;
+    }
+    color[u] = "BLACK";
+    return false;
+  } else if (color[u] == "GREY") {
+    // Cycle detected.
+    return true;
+  } else {
+    assert(false);
+  }
+}
+
+vector<string> color(N, "WHITE");
+bool has_cycle = false;
+for (int i = 0; i < N; ++i) {
+  has_cycle |= hasCycleDFS(i, graph, color);
+}
+
+// ------------------------------
+
+void findTopologicalOrder(int u, const vector<vector<int>>& g, vector<bool>& visited, vector<int>& order) {
+  if (visited[u]) {
+    return;
+  }
+
+  visited[u] = true;
+  for (int v : g[u]) {
+    findTopologicalOrder(v, g, visited, order);    
+  }
+  order.push_back(u);
+}
+
+vector<int> order;
+vector<bool> visited(N, false);
+for (int i = 0; i < N; ++i) {
+  if (!visited[i]) {
+    findTopologicalOrder(i, graph, visited, order);
+  }
+}
+
+// ------------------------------
+
+
