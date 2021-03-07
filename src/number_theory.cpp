@@ -18,9 +18,8 @@ vector<T> getPrimeFactors(T n) {
     n = n / 2;
   }
 
-  // i must be odd at this point. So we can skip
-  // one element (Note i = i + 2).
-  for (int i = 3; i <= sqrt(n); i = i+2) {
+  // i must be odd at this point. So we can do i = i + 2.
+  for (int i = 3; i * i <= n; i = i+2) {
     // While i divides n, add i and divide n.
     while (n % i == 0) {
       prime_factors.push_back(i);
@@ -28,9 +27,8 @@ vector<T> getPrimeFactors(T n) {
     }
   }
 
-  // This condition is to handle the case when n
-  // is a prime number greater than 2.
   if (n > 2) {
+    // What remains must be a prime factor.
     prime_factors.push_back(n);
   }
 
