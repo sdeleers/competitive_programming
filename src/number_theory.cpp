@@ -72,20 +72,20 @@ T add(T a, T b, T P) {
 // Finds integers x, y such that Bézout identity holds:
 // x * a + y * b = gcd(a, b).
 template <class T>
-T extendedEuclid(T a, T b, T* x, T* y) {
+T extendedEuclid(T a, T b, T& x, T& y) {
   // Base Case
   if (a == 0) {
-    *x = 0;
-    *y = 1;
+    x = 0;
+    y = 1;
     return b;
   }
 
   T x1, y1; // To store results of recursive call
-  T gcd = extendedEuclid(b%a, a, &x1, &y1);
+  T gcd = extendedEuclid(b % a, a, x1, y1);
 
   // Update x and y using results of recursive call.
-  *x = y1 - (b/a) * x1;
-  *y = x1;
+  x = y1 - (b / a) * x1;
+  y = x1;
 
   return gcd;
 }
@@ -123,7 +123,7 @@ template <class T>
 T inverseEuclid(T a, T P) {
   T a_inverse, k;
   // a * a_inverse + k * P = 1
-  extendedEuclid(a, P, &a_inverse, &k);
+  extendedEuclid(a, P, a_inverse, k);
   return a_inverse;
 }
 
