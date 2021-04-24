@@ -29,8 +29,8 @@ struct SegTree {
       // Completely contained within.
       return sum;
     } else {
-      int left_child_value = (left_child != nullptr) ? left_child->rangeSum(left, right) : BAD_VALUE;
-      int right_child_value = (right_child != nullptr) ? right_child->rangeSum(left, right) : BAD_VALUE;
+      T left_child_value = (left_child != nullptr) ? left_child->rangeSum(left, right) : BAD_VALUE;
+      T right_child_value = (right_child != nullptr) ? right_child->rangeSum(left, right) : BAD_VALUE;
       if (left_child_value != BAD_VALUE && right_child_value != BAD_VALUE) {
         return left_child_value + right_child_value;
       } else if (left_child_value != BAD_VALUE) {
@@ -89,8 +89,8 @@ struct SegTree {
       // Completely contained within.
       return sum;
     } else {
-      int left_child_value = (left_child != nullptr) ? left_child->rangeXOR(left, right) : BAD_VALUE;
-      int right_child_value = (right_child != nullptr) ? right_child->rangeXOR(left, right) : BAD_VALUE;
+      T left_child_value = (left_child != nullptr) ? left_child->rangeXOR(left, right) : BAD_VALUE;
+      T right_child_value = (right_child != nullptr) ? right_child->rangeXOR(left, right) : BAD_VALUE;
       if (left_child_value != BAD_VALUE && right_child_value != BAD_VALUE) {
         return left_child_value ^ right_child_value;
       } else if (left_child_value != BAD_VALUE) {
