@@ -1,61 +1,41 @@
-struct DisjointSet {
+class DisjointSet {
+ private:
   vector<int> parent;
-
-  DisjointSet(int N) : parent(N, -1) {}
-
-  void join(int a, int b) {
-    const int root1 = find(a);
-    const int root2 = find(b);
-    if (root1 != root2) {
-      // Attach smaller tree to larger tree.
-      if (root1 > root2) {  // Note: root1 and root2 are negative
-        // Component rooted at root1 is smaller.
-
-        // Order matters.
-        parent[root2] += parent[root1];  // Increase size of root2
-        parent[root1] = root2;  // Attach root1 to root2
-      } else {
-        // Component rooted at root2 is smaller.
-
-        parent[root1] += parent[root2];  // Increase size of root1
-        parent[root2] = root1;  // Attach root2 to root1
-      }
-    }
-  }
-
-  // Returns which node is at the root of the component
-  // that contains x.
+ public:
+  DisjointSet(int n) : parent(n, -1) {}
+  
   int find(int x) {
-    if (parent[x] < 0) {
-      return x;
-    } else {
-      return find(parent[x]);
+    int root = x;
+    while (parent[root] >= 0) {
+      root = parent[root];
     }
-  }
-
-  // Size of component containing x.
-  int size(int x) {
-    return -parent[find(x)];
-  }
-
-  bool sameSet(int a, int b) {
-    return find(a) == find(b);
+    // Path compression.
+    int current = x;
+    while (parent[current] >= 0) {
+      int tmp = parent[current];
+      parent[current] = root;
+      current = tmp;
+    }
+    return root;
   }
   
-  vector<vector<int>> getConnectedComponents() {
-    unordered_map<int, vector<int>> components_map;
-    for (int i = 0; i < parent.size(); ++i) {
-      int component = find(i);
-      if (components_map.find(component) == components_map.end()) {
-        components_map[component] = { i };
-      } else {
-        components_map[component].push_back(i);
-      }
+  bool join(int a, int b) {
+    const int root_a = find(a);
+    const int root_b = find(b);
+    if (root_a == root_b) return false;
+    
+    if (parent[root_a] > parent[root_b]) {
+      parent[root_a] += parent[root_b];  // Increment size of tree rooted at a.
+      parent[root_b] = root_a;  // Attach root_b to root_a.
+    } else {
+      // Attach root_a to root_b
+      parent[root_b] += parent[root_a];  // Increment size of tree rooted at b.
+      parent[root_a] = root_b;  // Attach root_a to root_b.
     }
-    vector<vector<int>> components;
-    for (auto p : components_map) {
-      components.push_back(p.second);
-    }
-    return components;
+    return true;
+  }
+
+  bool sameSet(int i, int j) {
+    return find(i) == find(j);
   }
 };
