@@ -27,7 +27,7 @@ class SCC {
     for (int v : reverse_graph[u]) {
       if (!visited[v]) {
         scc_index[v] = scc_index[u];
-        dfsBackwardStep(v, visited,scc_index);
+        dfsBackwardStep(v, visited, scc_index);
       }
     }
   }
