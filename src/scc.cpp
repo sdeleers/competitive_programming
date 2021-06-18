@@ -38,16 +38,11 @@ class SCC {
     vector<int> order;
     vector<bool> visited(N, false);
     for (int i = 0; i < N; ++i) {
-      // if (!visited[i]) {
+      if (!visited[i]) {
         dfsForwardStep(i, visited, order);
-      // }
+      }
     }
-
     reverse(order.begin(), order.end());
-
-
-    for (int i : order) cout << i << " ";
-    cout << endl;
 
     // Backward step: find SCCs.
     int current_scc = 0;
