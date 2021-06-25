@@ -93,7 +93,7 @@ T extendedEuclid(T a, T b, T& x, T& y) {
 // a * b modulo P
 template <class T>
 T multiply(T a, T b, T P) {
-  return (T) a * b % P;
+  return (int64_t) a * b % P;
 }
 
 // Efficient calculation of a ^ b modulo P
