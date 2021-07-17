@@ -4,8 +4,8 @@ struct SegTree {
   const T BAD_VALUE = -1;
   int leftmost;
   int rightmost;
-  SegTree* left_child = nullptr;
-  SegTree* right_child = nullptr;
+  shared_ptr<SegTree> left_child = nullptr;
+  shared_ptr<SegTree> right_child = nullptr;
   T sum;
 
   SegTree(int leftmost, int rightmost, const vector<T>& elements) {
@@ -15,8 +15,8 @@ struct SegTree {
       sum = elements[leftmost];
     } else {
       const int mid = (leftmost + rightmost) / 2;
-      left_child = new SegTree(leftmost, mid, elements);
-      right_child = new SegTree(mid + 1, rightmost, elements);
+      left_child = make_shared<SegTree<T>>(leftmost, mid, elements);
+      right_child = make_shared<SegTree<T>>(mid + 1, rightmost, elements);
       sum = left_child->sum + right_child->sum;
     }
   }
@@ -41,27 +41,21 @@ struct SegTree {
     }
   }
 
-  void pointUpdate(int index, T value) {
+  void pointSet(int index, T value) {
     if (leftmost == rightmost) {
       assert(leftmost == index);
-      sum += value;
+      sum = value;
     } else {
       assert(left_child != nullptr);
       assert(right_child != nullptr);
       if (index <= left_child->rightmost) {
-        left_child->pointUpdate(index, value);
+        left_child->pointSet(index, value);
       } else {
-        right_child->pointUpdate(index, value);
+        right_child->pointSet(index, value);
       }
       sum = left_child->sum + right_child->sum;
     }
   }
-
-  // Clean up dynamically allocated memory!
-  ~SegTree() {
-    delete left_child;
-    delete right_child;
-  }  
 };
 
 // Old style implementation. Should rewrite this.
@@ -162,8 +156,8 @@ template <class T>
 struct SegTree {
   int leftmost;
   int rightmost;
-  SegTree* left_child;
-  SegTree* right_child;
+  shared_ptr<SegTree> left_child = nullptr;
+  shared_ptr<SegTree> right_child = nullptr;
   T sum;
   // Propagation value that hasn't been propagated to its children.
   // If prop is non-zero this means that "sum" variable of this node
@@ -180,8 +174,8 @@ struct SegTree {
       sum = elements[leftmost];
     } else {
       const int mid = (leftmost + rightmost) / 2;
-      left_child = new SegTree(leftmost, mid, elements);
-      right_child = new SegTree(mid + 1, rightmost, elements);
+      left_child = make_shared<SegTree<T>>(leftmost, mid, elements);
+      right_child = make_shared<SegTree<T>>(mid + 1, rightmost, elements);
       sum = left_child->sum + right_child->sum;
     }
   }
@@ -241,12 +235,6 @@ struct SegTree {
       sum = left_child->sum + right_child->sum;
     }
   }
-
-  // Clean up dynamically allocated memory!
-  ~SegTree() {
-    delete left_child;
-    delete right_child;
-  }
 };
 
 // Supports both setTo and rangeAdd
@@ -254,8 +242,8 @@ template <class T>
 struct SegTree {
   int leftmost;
   int rightmost;
-  SegTree* left_child;
-  SegTree* right_child;
+  shared_ptr<SegTree> left_child;
+  shared_ptr<SegTree> right_child;
   T sum;
 
   // Propagation value that hasn't been propagated to its children.
@@ -277,8 +265,8 @@ struct SegTree {
       sum = elements[leftmost];
     } else {
       const int mid = (leftmost + rightmost) / 2;
-      left_child = new SegTree(leftmost, mid, elements);
-      right_child = new SegTree(mid + 1, rightmost, elements);
+      left_child = make_shared<SegTree<T>>(leftmost, mid, elements);
+      right_child = make_shared<SegTree<T>>(mid + 1, rightmost, elements);
       sum = left_child->sum + right_child->sum;
     }
   }
@@ -372,11 +360,5 @@ struct SegTree {
       right_child->setTo(left, right, value);
       sum = left_child->sum + right_child->sum;
     }
-  }
-
-  // Clean up dynamically allocated memory!
-  ~SegTree() {
-    delete left_child;
-    delete right_child;
   }
 };
