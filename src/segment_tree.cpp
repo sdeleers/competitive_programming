@@ -237,6 +237,84 @@ struct SegTree {
   }
 };
 
+// Supports rangeMin using lazy propagation.
+template <class T>
+struct SegTree {
+  const int INFTY = 1e9;
+
+  int leftmost;
+  int rightmost;
+  shared_ptr<SegTree> left_child = nullptr;
+  shared_ptr<SegTree> right_child = nullptr;
+  T minimum;
+  // Propagation value that hasn't been propagated to its children.
+  // If prop is non-zero tt means that the subtree is out of sync with
+  // its root (root = this node).
+  T prop;
+
+  SegTree(int leftmost, int rightmost) : leftmost(leftmost), rightmost(rightmost), minimum(0), prop(0) {
+    if (leftmost != rightmost) {
+      const int mid = (leftmost + rightmost) / 2;
+      left_child = make_shared<SegTree<T>>(leftmost, mid);
+      right_child = make_shared<SegTree<T>>(mid + 1, rightmost);
+    }
+  }
+
+  // Propagate to the subtree.
+  void propagate() {
+    // assert(left_child != nullptr && right_child != nullptr);
+    if (prop != 0) {
+      left_child->minimum += prop;
+      left_child->prop += prop;
+
+      right_child->minimum += prop;
+      right_child->prop += prop;
+
+      prop = 0;
+    }
+  }
+
+  T query(int left, int right) {
+    if (left > rightmost || right < leftmost) {
+      // Disjoint.
+      return INFTY;
+    } else if (leftmost >= left && rightmost <= right) {
+      // Fully contained within.
+
+      // We don't need to propagate since we are not going down to
+      // the children of this node.
+
+      return minimum;
+    } else {
+      // Partially overlapping.
+      propagate();
+      return min(left_child->query(left, right), right_child->query(left, right));
+    }
+  }
+
+  void add(int left, int right, T value) {
+    if (left > rightmost || right < leftmost) {
+      // Disjoint: don't do anything.
+    } else if (leftmost >= left && rightmost <= right) {
+      // Fully contained within.
+
+      // Propagation is necessary to make subtree nodes consistent but
+      // we're not going down to the subtree so no need to propagate.
+
+      minimum += value;
+      // Set propagation value which signifies that subtree is out of sync.
+      prop += value;
+    } else {
+      // Partially overlapping.
+      assert(left_child != nullptr && right_child != nullptr);
+      propagate();
+      left_child->add(left, right, value);
+      right_child->add(left, right, value);
+      minimum = min(left_child->minimum, right_child->minimum);
+    }
+  }
+};
+
 // Supports both setTo and rangeAdd
 template <class T>
 struct SegTree {
