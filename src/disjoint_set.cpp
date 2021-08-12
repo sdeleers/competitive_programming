@@ -1,8 +1,9 @@
 class DisjointSet {
  private:
   vector<int> parent;
+  vector<int> size;
  public:
-  DisjointSet(int n) : parent(n, -1) {}
+  DisjointSet(int n) : parent(n, -1), size(n, 1) {}
   
   int find(int x) {
     int root = x;
@@ -24,14 +25,13 @@ class DisjointSet {
     const int root_b = find(b);
     if (root_a == root_b) return false;
     
-    if (parent[root_a] > parent[root_b]) {
-      parent[root_a] += parent[root_b];  // Increment size of tree rooted at a.
-      parent[root_b] = root_a;  // Attach root_b to root_a.
-    } else {
-      // Attach root_a to root_b
-      parent[root_b] += parent[root_a];  // Increment size of tree rooted at b.
-      parent[root_a] = root_b;  // Attach root_a to root_b.
+    if (size[root_a] < size[root_b]) {
+      swap(root_a, root_b);
     }
+   
+    parent[root_b] = root_a;
+    size[root_a] += size[root_b];
+
     return true;
   }
 
