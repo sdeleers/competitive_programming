@@ -21,8 +21,8 @@ class DisjointSet {
   }
   
   bool join(int a, int b) {
-    const int root_a = find(a);
-    const int root_b = find(b);
+    int root_a = find(a);
+    int root_b = find(b);
     if (root_a == root_b) return false;
     
     if (size[root_a] < size[root_b]) {
