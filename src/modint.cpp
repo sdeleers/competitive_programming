@@ -92,3 +92,43 @@ struct ModInt {
  
 const int MOD = 998244353;
 using mod_int = ModInt<MOD>;
+
+vector<mod_int> fact;
+vector<mod_int> inverse_fact;
+
+void computeFactorials(int max_value) {
+  const int num_already_computed = fact.size();
+  max_value = max(1, max_value);
+  if (num_already_computed > max_value) return;  // Already computed.
+
+  fact.resize(max_value + 1);
+  inverse_fact.resize(max_value + 1);
+  fact[0] = 1;
+  fact[1] = 1;
+  for (int64_t i = max(2, num_already_computed); i <= max_value; ++i) {
+    fact[i] = i * fact[i - 1];
+  }
+
+  inverse_fact[max_value] = 1 / fact[max_value];
+  for (int64_t i = max_value - 1; i >= num_already_computed; --i) {
+    inverse_fact[i] = (i + 1) * inverse_fact[i + 1];
+  }
+}
+
+mod_int factorial(int64_t n) {
+  if (n < 0) return 0;
+  computeFactorials(n);
+  return fact[n];
+}
+
+mod_int inverse_factorial(int64_t n) {
+  if (n < 0) return 0;
+  computeFactorials(n);
+  return inverse_fact[n];
+}
+
+mod_int choose(int64_t n, int64_t k) {
+  if (n < 0 || k > n) return 0;
+  computeFactorials(n);
+  return fact[n] * inverse_fact[k] * inverse_fact[n - k];
+}
