@@ -47,12 +47,38 @@ struct ModInt {
     return *this;
   }
 
+  ModInt power(int64_t p) const {
+    if (p < 0) return inverse().power(-p);
+
+    ModInt result = 1;
+    ModInt a = *this;
+    while (p > 0) {
+      if (p & 1) {
+        result *= a;
+      }
+      p >>= 1;
+      a *= a;
+    }
+    return result;
+  }
+
+  // Modular inverse of a modulo P using Fermat's little theorem.
+  // Only works when P is a prime.
+  ModInt inverse() const {
+    return power(MOD - 2);
+  }
+
+  ModInt& operator/=(const ModInt& rhs) {
+      return *this *= rhs.inverse();
+  }
+
   ModInt operator++(int) { ModInt before = *this; ++*this; return before; }
   ModInt operator--(int) { ModInt before = *this; --*this; return before; }
 
   friend ModInt operator*(const ModInt &a, const ModInt &b) { return ModInt(a) *= b; }
   friend ModInt operator+(const ModInt &a, const ModInt &b) { return ModInt(a) += b; }
   friend ModInt operator-(const ModInt &a, const ModInt &b) { return ModInt(a) -= b; }
+  friend ModInt operator/(const ModInt &a, const ModInt &b) { return ModInt(a) /= b; }
 
   friend bool operator==(const ModInt &a, const ModInt &b) { return a.val == b.val; }
   friend bool operator!=(const ModInt &a, const ModInt &b) { return a.val != b.val; }
