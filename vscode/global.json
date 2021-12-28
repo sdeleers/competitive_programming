@@ -1,0 +1,55 @@
+{
+	// Place your global snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"Find failing test case": {
+		"prefix": "findfailing",
+		"body": [
+			"#!/bin/bash",
+			"filename=",
+			"filename_correct=",
+			"",
+			"g++ -std=c++17 gen.cpp -o gen",
+			"g++ -std=c++17 \\$filename.cpp -o me_executable",
+			"g++ -std=c++17 \\$filename_correct.cpp -o them_executable",
+			"ok=true",
+			"for i in {1..1000}",
+			"do",
+			"	 echo \\$i",
+			"  ./gen \\$i >testcase",
+			"  ./me_executable <testcase >me",
+			"  ./them_executable <testcase >them",
+			"  diff=\\$(diff me them) ",
+			"  if [ \"\\$diff\" != \"\" ]",
+			"  then",
+			"      echo \"Failing test case \\$i\"",
+			"      exit",
+			"  fi",
+			"done",
+			"echo \"All test cases passed.\"",
+		],
+		"description": "Script to find failing test case"
+	},
+	"Run random test cases": {
+		"prefix": "runcases",
+		"body": [
+			"#!/bin/bash",
+			"filename=",
+			"",
+			"g++ -std=c++17 gen.cpp -o gen",
+			"g++ -std=c++17 \\$filename.cpp -o me_executable",
+			"for i in {1..1000}",
+			"do",
+			"	echo \\$i",
+			"	./gen \\$i >testcase",
+			"	time ./me_executable <testcase",
+			"done",
+		],
+		"description": "Script to find failing test case"
+	}
+
+}

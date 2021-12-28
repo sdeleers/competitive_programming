@@ -1,0 +1,42 @@
+{
+	// Place your snippets for python here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	"Plot": {
+		"prefix": "plot",
+		"body": [
+			"import matplotlib.pyplot as plt",
+			"import numpy as np",
+			"",
+			"# Scatter points.",
+			"x = [5, 0, 5, 10]",
+			"y = [0, 5, 10, 5]",
+			"plt.scatter(x, y, c=\"k\", alpha=0.8)",
+			"",
+			"# Draw circle.",
+			"circle1 = plt.Circle((0, 0), 3, color='r', fill=False)",
+			"plt.gca().add_patch(circle1)",
+			"plt.gca().set_aspect(1.0)",
+			"",
+			"# Draw equation",
+			"x = np.linspace(0, 8, 100)",
+			"y1 = (x - 3)**2 + 1",
+			"y2 = (x - 4)**2 - 1",
+			"y3 = (x - 5)**2 + 2",
+			"plt.plot(x, y1, label='y1')",
+			"plt.plot(x, y2, label='y2')",
+			"plt.plot(x, y3, label='y3')",
+			"plt.legend()",
+			"",
+			"# Draw vertical line",
+			"x = [2] * 100",
+			"y = np.linspace(0, 10, 100)",
+			"plt.plot(x, y)",
+			"",
+			"plt.show()",
+		],
+		"description": "Log output to console"
+	}
+}
