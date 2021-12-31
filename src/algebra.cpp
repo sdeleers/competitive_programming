@@ -33,7 +33,7 @@ void gaussianElimination(int N,
       const auto first_number_current_row = matrix[current_row][current_col];
       const auto first_number_row = matrix[row][current_col];
       if (first_number_row == 0) continue;  // Speed optimization.
-      for (int k = N; k >= current_col; --k) {
+      for (int k = current_col; k <= N; ++k) {
         matrix[row][k] *= first_number_current_row;
         matrix[row][k] -= first_number_row * matrix[current_row][k];
       }
