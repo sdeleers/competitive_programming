@@ -1,3 +1,62 @@
+// Ax = b % P
+// A does not need to be square, equations can be over/under determined.
+// matrix = [A | b]
+// Validation of the solution needs to happen outside of this function.
+// Because if there exists no solution, a solution will be returned anyway.
+void gaussianElimination(int N,
+                         vector<vector<mod_int>>& matrix,
+                         vector<mod_int>& solution) {                         
+  const int num_rows = matrix.size();                                 
+  solution.resize(N);
+  fill(solution.begin(), solution.end(), 0);
+  // Forward elimination.
+  int current_row = 0;
+  for (int current_col = 0; current_col +  1 < N; ++current_col) {
+    if (current_row >= matrix.size()) break;
+    int selected_row = current_row;
+    for (int row = current_row + 1; row < num_rows; ++row) {
+      if (matrix[row][current_col] > matrix[selected_row][current_col]) {
+        selected_row = row;
+      }
+    }
+
+    // There is nothing with a '1' left. We will be able to choose whatever we want for this edge.
+    if (matrix[selected_row][current_col] == 0) continue;
+
+    // Put selected row in position.
+    for (int col = current_col; col <= N; ++col) {
+      swap(matrix[current_row][col], matrix[selected_row][col]);
+    }
+
+    // Subtract rows from selected row.
+    for (int row = current_row + 1; row < num_rows; ++row) {
+      const auto first_number_current_row = matrix[current_row][current_col];
+      const auto first_number_row = matrix[row][current_col];
+      if (first_number_row == 0) continue;  // Speed optimization.
+      for (int k = N; k >= current_col; --k) {
+        matrix[row][k] *= first_number_current_row;
+        matrix[row][k] -= first_number_row * matrix[current_row][k];
+      }
+    }
+    ++current_row;
+  }
+
+  // Back substitution.
+  for (int row = num_rows - 1; row >= 0; --row) {
+    for (int col = 0; col < N; ++col) {
+      if (matrix[row][col] != 0) {
+        // Found leftmost.
+        for (int k = col + 1; k < N; ++k) {
+          matrix[row][N] -= solution[k] * matrix[row][k];
+        }
+        assert(matrix[row][col] != 0);  // Otherwise modular inverse doesn't exist.
+        solution[col] = matrix[row][N] / matrix[row][col];
+        break;
+      }
+    }
+  }
+}
+
 // Gaussian elimination code based on code from book
 // Competitive Programming 3 by Steven and Felix Halim.
 // Solve A * x = b.
@@ -24,8 +83,12 @@ bool gaussianElimination(int N,
     }
 
     for (int i = j + 1; i < N; ++i) {
-      for (int k = N; k >= j; --k) {
-        matrix[i][k] -= matrix[j][k] * matrix[i][j] / matrix[j][j];
+      // Note: recently changed this loop. I think it's correct
+      // but double check it should you expect a bug.
+      const double first_number_current_row = matrix[j][j];
+      const double first_number_row = matrix[i][j];
+      for (int k = j; k <= N; ++k) {
+        matrix[i][k] -= matrix[j][k] * first_number_row / first_number_current_row;
       }
     }
   }
