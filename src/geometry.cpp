@@ -1,4 +1,166 @@
 struct Point {
+  int64_t x;
+  int64_t y;
+
+  Point operator-(const Point& rhs) const {
+    return { x - rhs.x, y - rhs.y };
+  }
+
+  double length() const {
+    return sqrt(x * x + y * y);
+  }
+
+  bool operator<(const Point& p) const {
+    if (x != p.x) {
+      return x < p.x;
+    } else {
+      return y < p.y;
+    }
+  }
+};
+
+int64_t cross(const Point& a, const Point& b) {
+  return a.x * b.y - a.y * b.x;
+}
+
+bool strict_cw(const Point& a, const Point& b, const Point& c) {
+  return cross(b - a, c - a) < 0;
+}
+
+bool cw(const Point& a, const Point& b, const Point& c) {
+  return cross(b - a, c - a) <= 0;
+}
+
+bool strict_ccw(const Point& a, const Point& b, const Point& c) {
+  return cross(b - a, c - a) > 0;
+}
+
+bool ccw(const Point& a, const Point& b, const Point& c) {
+  return cross(b - a, c - a) >= 0;
+}
+
+vector<Point> convexHull(vector<Point>& points) {
+  const int N = points.size();
+  sort(points.begin(), points.end());
+  const Point& a = points.front();
+  const Point& b = points.back();
+  
+  vector<Point> upper = { a };
+  vector<Point> lower = { a };
+  for (int i = 1; i + 1 < N; ++i) {
+    const Point& p = points[i];
+    if (strict_ccw(a, b, p)) {   // Upper.
+      // Potentially remove older points.
+      while (upper.size() >= 2 && ccw(upper[upper.size() - 2], upper.back(), p)) {
+        upper.pop_back();
+      }
+
+      // Should we add current point?
+      if (strict_cw(upper.back(), p, b)) {
+        upper.push_back(p);
+      }
+    } else if (strict_cw(a, b, p)) {  // Lower.
+      // Potentially remove older points.
+      while (lower.size() >= 2 && cw(lower[lower.size() - 2], lower.back(), p)) {
+        lower.pop_back();
+      }
+
+      // Should we add current point?
+      if (strict_ccw(lower.back(), p, b)) {
+        lower.push_back(p);
+      }
+    }
+  }
+  upper.push_back(b);
+
+  reverse(lower.begin(), lower.end());
+  if (!lower.empty()) lower.pop_back();  // Remove a.
+
+  for (const auto& point : lower) {
+    upper.push_back(point);
+  }
+
+  return upper;
+}
+
+vector<vector<Point>> convexHullSegments(vector<Point>& points) {
+  const int N = points.size();
+  sort(points.begin(), points.end());
+  const Point& a = points.front();
+  const Point& b = points.back();
+  
+  vector<Point> upper = { a };
+  vector<Point> lower = { a };
+  for (int i = 1; i + 1 < N; ++i) {
+    const Point& p = points[i];
+    if (strict_ccw(a, b, p)) {   // Upper.
+      // Potentially remove older points.
+      while (upper.size() >= 2 && strict_ccw(upper[upper.size() - 2], upper.back(), p)) {
+        upper.pop_back();
+      }
+
+      // Should we add current point?
+      if (strict_cw(upper.back(), p, b)) {
+        upper.push_back(p);
+      }
+    } else if (strict_cw(a, b, p)) {  // Lower.
+      // Potentially remove older points.
+      while (lower.size() >= 2 && strict_cw(lower[lower.size() - 2], lower.back(), p)) {
+        lower.pop_back();
+      }
+
+      // Should we add current point?
+      if (strict_ccw(lower.back(), p, b)) {
+        lower.push_back(p);
+      }
+    }
+  }
+  lower.push_back(b);
+  upper.push_back(b);
+  return { lower, upper };
+}
+
+int64_t dot(const Point& a, const Point& b) {
+  return a.x * b.x + a.y * b.y;
+}
+
+vector<Point> normalDirections(const Point& direction) {
+  return { { direction.y, -direction.x }, { -direction.y, direction.x } };
+}
+
+Point farthestPointInDirection(const vector<Point>& hull_segment, const Point& direction) {
+  // Binary search on edges (i.e. ternary search on points).
+  int lo = 0;
+  int hi = hull_segment.size() - 2;
+  while (lo < hi) {
+    const int mid = lo + (hi - lo) / 2;
+    const auto dot1 = dot(direction, hull_segment[mid]);
+    const auto dot2 = dot(direction, hull_segment[mid + 1]);
+    if (dot1 == dot2) {
+      return hull_segment[mid];
+    } else if (dot1 > dot2) {
+      hi = mid - 1;
+    } else {
+      lo = mid + 1;
+    }
+  }
+  // Only one edge left, take the farthest end point.
+  const auto dot1 = dot(direction, hull_segment[lo]);
+  const auto dot2 = dot(direction, hull_segment[lo + 1]);
+  return (dot1 > dot2) ? hull_segment[lo] : hull_segment[lo + 1];
+}
+
+double pointToLineDistance(const Point& a, const Point& b, const Point& p) {
+  const double k = (p - a).length();
+  const double l = abs(dot(p - a, b - a)) / (b - a).length();
+  // k * k = l * l + m * m
+  const double m = sqrt(k * k - l * l);
+  return m;
+}
+
+// ------------------------------
+
+struct Point {
   double x;
   double y;
 };
